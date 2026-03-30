@@ -186,7 +186,11 @@ export default function Editor() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#0a0e1a]">
-      <Sidebar activeTab={activeTab} onTabChange={(t) => setActiveTab(t as 'scene' | 'inspector' | 'history')}>
+      <Sidebar
+        activeTab={activeTab}
+        onTabChange={(t) => setActiveTab(t as 'scene' | 'inspector' | 'history')}
+        promptArea={<PromptInput onSubmit={handleGenerate} loading={loading} error={error} />}
+      >
         {activeTab === 'scene' && (
           <ScenePanel
             presets={presets.map((p) => ({ name: p.name, description: p.description }))}
@@ -207,18 +211,13 @@ export default function Editor() {
         )}
       </Sidebar>
 
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 relative">
         <Viewport
           ref={viewportRef}
           onAnimate={handleAnimate}
           onObjectSelect={handleObjectSelect}
-          className="flex-1"
+          className="w-full h-full"
         />
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e1a] via-[#0a0e1a]/80 to-transparent pointer-events-none">
-          <div className="pointer-events-auto max-w-2xl mx-auto">
-            <PromptInput onSubmit={handleGenerate} loading={loading} error={error} />
-          </div>
-        </div>
       </div>
     </div>
   );

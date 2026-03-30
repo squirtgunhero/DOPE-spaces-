@@ -153,7 +153,41 @@ const Viewport = forwardRef<ViewportHandle, ViewportProps>(function Viewport(
 
     // --- Scene ---
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#0a0e1a');
+    scene.fog = new THREE.FogExp2('#0a0e1a', 0.025);
     sceneRef.current = scene;
+
+    // --- Default scene content (grid + lights) ---
+    // Ground grid
+    const gridHelper = new THREE.GridHelper(30, 30, 0x1a1a2e, 0x12122a);
+    gridHelper.position.y = 0;
+    gridHelper.name = '__grid';
+    scene.add(gridHelper);
+
+    // Ambient light
+    const ambientLight = new THREE.AmbientLight('#4a4a6a', 0.4);
+    ambientLight.name = '__ambient';
+    scene.add(ambientLight);
+
+    // Soft directional fill
+    const fillLight = new THREE.DirectionalLight('#6366f1', 0.3);
+    fillLight.position.set(-5, 8, -5);
+    fillLight.name = '__fill';
+    scene.add(fillLight);
+
+    // Warm key light
+    const keyLight = new THREE.DirectionalLight('#f8fafc', 0.5);
+    keyLight.position.set(5, 10, 5);
+    keyLight.name = '__key';
+    scene.add(keyLight);
+
+    // Small center marker (subtle glowing sphere)
+    const markerGeo = new THREE.SphereGeometry(0.08, 16, 16);
+    const markerMat = new THREE.MeshBasicMaterial({ color: '#6366f1', transparent: true, opacity: 0.4 });
+    const marker = new THREE.Mesh(markerGeo, markerMat);
+    marker.position.set(0, 0.08, 0);
+    marker.name = '__marker';
+    scene.add(marker);
 
     // --- Camera ---
     const camera = new THREE.PerspectiveCamera(
