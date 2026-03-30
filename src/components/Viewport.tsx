@@ -283,7 +283,7 @@ const Viewport = forwardRef<ViewportHandle, ViewportProps>(function Viewport(
       {/* Info badge — top-left */}
       <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 pointer-events-none select-none">
         <span className="inline-block w-2 h-2 rounded-full bg-purple-500" />
-        <span className="text-xs text-white/60 tracking-wide">AI 3D Studio</span>
+        <span className="text-xs text-white/60 tracking-wide">DOPE [spaces]</span>
       </div>
 
       {/* Tool buttons — top-right */}

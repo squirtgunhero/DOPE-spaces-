@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI 3D Studio",
-  description: "Generate interactive 3D scenes with natural language",
+  title: "DOPE [spaces]",
+  description: "AI-powered 3D scene generation with natural language",
 };
 
 export default function RootLayout({

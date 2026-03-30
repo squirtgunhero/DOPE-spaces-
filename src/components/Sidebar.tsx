@@ -46,9 +46,9 @@ export default function Sidebar({ activeTab, onTabChange, children, promptArea }
           </div>
           <div>
             <h1 className="text-lg font-bold bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent leading-tight">
-              AI 3D Studio
+              DOPE [spaces]
             </h1>
-            <p className="text-[11px] text-white/30 mt-0.5">Powered by Claude</p>
+            <p className="text-[11px] text-white/30 mt-0.5">AI 3D Scene Generator</p>
           </div>
         </div>
       </div>
