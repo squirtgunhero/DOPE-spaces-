@@ -3,21 +3,6 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-adobe-bg: #1e1e1e;
-  --color-adobe-surface: #2a2a2a;
-  --color-adobe-panel: #252525;
-  --color-adobe-elevated: #323232;
-  --color-adobe-border: #3a3a3a;
-  --color-adobe-border-light: #444444;
-  --color-adobe-text: #e1e1e1;
-  --color-adobe-text-secondary: #999999;
-  --color-adobe-text-tertiary: #6e6e6e;
-  --color-adobe-accent: #2680eb;
-  --color-adobe-accent-hover: #3891ff;
-  --color-adobe-accent-dim: #1a5fb4;
-  --color-adobe-danger: #e34850;
-  --color-adobe-success: #2d9d78;
-  --color-adobe-warning: #e68619;
 }
 
 * {
@@ -30,49 +15,25 @@ html,
 body {
   height: 100%;
   overflow: hidden;
-  background: var(--color-adobe-bg);
-  color: var(--color-adobe-text);
+  background: #1a1a1a;
+  color: #e1e1e1;
   font-family: var(--font-sans), "Segoe UI", system-ui, sans-serif;
-  font-size: 13px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Adobe-style scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+::-webkit-scrollbar-corner { background: transparent; }
 
 /* Spinner */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1s linear infinite; }
 
-/* Adobe-style range input */
+/* Range input */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -80,54 +41,29 @@ input[type="range"] {
   cursor: pointer;
   height: 20px;
 }
-
 input[type="range"]::-webkit-slider-runnable-track {
-  background: var(--color-adobe-border);
+  background: #3a3a3a;
   height: 2px;
   border-radius: 1px;
 }
-
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   margin-top: -5px;
-  background: var(--color-adobe-text);
+  background: #ccc;
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  border: 2px solid var(--color-adobe-bg);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+  border: 2px solid #1a1a1a;
 }
-
 input[type="range"]:hover::-webkit-slider-thumb {
-  background: var(--color-adobe-accent);
-  box-shadow: 0 0 0 1px var(--color-adobe-accent);
+  background: #2680eb;
 }
 
-input[type="range"]::-moz-range-track {
-  background: var(--color-adobe-border);
-  height: 2px;
-  border-radius: 1px;
-}
-
-input[type="range"]::-moz-range-thumb {
-  background: var(--color-adobe-text);
-  height: 12px;
-  width: 12px;
-  border-radius: 50%;
-  border: 2px solid var(--color-adobe-bg);
-}
-
-/* Number input hide spinners */
+/* Number input: hide spinners */
 input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type="number"] {
-  -moz-appearance: textfield;
-}
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
 
-/* Utility: no scrollbar */
+/* No-scrollbar utility */
 .scrollbar-none::-webkit-scrollbar { display: none; }
 .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }

@@ -1,17 +1,17 @@
 'use client';
 
-import { Suspense, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSceneStore } from '@/store/scene-store';
-import LeftPanel from '@/panels/LeftPanel';
 import RightPanel from '@/panels/RightPanel';
 import RevisionBar from '@/panels/RevisionBar';
 import dynamic from 'next/dynamic';
+import HomeScreen from './HomeScreen';
 
 const SceneRenderer = dynamic(() => import('@/viewport/SceneRenderer'), {
   ssr: false,
   loading: () => (
-    <div className="flex-1 flex items-center justify-center bg-[var(--color-adobe-bg)]">
-      <div className="text-[var(--color-adobe-text-tertiary)] text-[12px]">Loading viewport…</div>
+    <div className="flex-1 flex items-center justify-center bg-[#1a1a1a]">
+      <div className="text-[#666] text-[13px]">Loading viewport…</div>
     </div>
   ),
 });
@@ -21,9 +21,7 @@ export default function EditorLayout() {
   const status = useSceneStore((s) => s.status);
   const selectedObjectName = useSceneStore((s) => s.selectedObjectName);
   const selectObject = useSceneStore((s) => s.selectObject);
-  const leftPanelOpen = useSceneStore((s) => s.leftPanelOpen);
   const rightPanelOpen = useSceneStore((s) => s.rightPanelOpen);
-  const toggleLeftPanel = useSceneStore((s) => s.toggleLeftPanel);
   const toggleRightPanel = useSceneStore((s) => s.toggleRightPanel);
   const [paused, setPaused] = useState(false);
 
@@ -32,41 +30,51 @@ export default function EditorLayout() {
     [selectObject],
   );
 
+  const hasScene = scene.objects.length > 0;
   const isWorking = status === 'generating' || status === 'revising';
 
-  return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--color-adobe-bg)]">
-      {/* ─── Top toolbar ─── */}
-      <div className="h-10 min-h-[40px] flex items-center justify-between px-3 bg-[var(--color-adobe-surface)] border-b border-[var(--color-adobe-border)]">
-        {/* Left: brand + panel toggle */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleLeftPanel}
-            className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${leftPanelOpen ? 'bg-[var(--color-adobe-accent)]/15 text-[var(--color-adobe-accent)]' : 'text-[var(--color-adobe-text-tertiary)] hover:text-[var(--color-adobe-text-secondary)]'}`}
-            title="Toggle left panel"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="1" y="2" width="5" height="12" rx="1" stroke="currentColor" strokeWidth="1.2" />
-              <rect x="8" y="2" width="7" height="12" rx="1" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.4" />
+  // ─── No scene yet → show prompt-first home screen ───
+  if (!hasScene && !isWorking) {
+    return <HomeScreen />;
+  }
+
+  // ─── Generating → show loading state ───
+  if (!hasScene && isWorking) {
+    return (
+      <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#1a1a1a]">
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] flex items-center justify-center mb-6">
+            <svg className="animate-spin h-6 w-6 text-[#2680eb]" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" opacity="0.2" />
+              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-          </button>
+          </div>
+          <h2 className="text-[18px] font-semibold text-white mb-2">Creating your scene</h2>
+          <p className="text-[14px] text-[#888]">This usually takes 10–20 seconds…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Scene loaded → show editor ───
+  return (
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#1a1a1a]">
+      {/* ─── Top bar ─── */}
+      <div className="h-11 min-h-[44px] flex items-center justify-between px-4 bg-[#252525] border-b border-[#333]">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-[var(--color-adobe-accent)] flex items-center justify-center">
-              <svg width="11" height="11" viewBox="0 0 20 20" fill="none">
+            <div className="w-6 h-6 rounded-lg bg-[#2680eb] flex items-center justify-center">
+              <svg width="12" height="12" viewBox="0 0 20 20" fill="none">
                 <path d="M10 2L18 7V13L10 18L2 13V7L10 2Z" fill="white" fillOpacity="0.9" />
               </svg>
             </div>
-            <span className="text-[13px] font-semibold text-[var(--color-adobe-text)] tracking-tight">DOPE [spaces]</span>
+            <span className="text-[14px] font-semibold text-white">DOPE [spaces]</span>
           </div>
-        </div>
-
-        {/* Center: status */}
-        <div className="flex items-center gap-2">
           {isWorking && (
-            <div className="flex items-center gap-2 text-[var(--color-adobe-accent)]">
+            <div className="flex items-center gap-2 ml-4 text-[#2680eb]">
               <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.2" />
-                <path fill="currentColor" opacity="0.8" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
               <span className="text-[12px] font-medium">
                 {status === 'generating' ? 'Generating…' : 'Revising…'}
@@ -75,43 +83,28 @@ export default function EditorLayout() {
           )}
         </div>
 
-        {/* Right: viewport controls + panel toggle */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => setPaused((p) => !p)}
-            className="h-7 px-2.5 flex items-center gap-1.5 rounded text-[11px] font-medium text-[var(--color-adobe-text-secondary)] hover:text-[var(--color-adobe-text)] hover:bg-[var(--color-adobe-elevated)] transition-colors"
+            className="h-7 px-3 rounded-md text-[12px] font-medium text-[#aaa] hover:text-white hover:bg-[#333] transition-colors"
           >
-            {paused ? (
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><polygon points="1,0 10,5 1,10" /></svg>
-            ) : (
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><rect x="1" y="0" width="3" height="10" /><rect x="6" y="0" width="3" height="10" /></svg>
-            )}
-            {paused ? 'Play' : 'Pause'}
+            {paused ? '▶ Play' : '⏸ Pause'}
           </button>
-          <div className="w-px h-4 bg-[var(--color-adobe-border)]" />
+          <div className="w-px h-4 bg-[#333] mx-1" />
           <button
             onClick={toggleRightPanel}
-            className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${rightPanelOpen ? 'bg-[var(--color-adobe-accent)]/15 text-[var(--color-adobe-accent)]' : 'text-[var(--color-adobe-text-tertiary)] hover:text-[var(--color-adobe-text-secondary)]'}`}
-            title="Toggle right panel"
+            className={`h-7 px-2.5 rounded-md text-[12px] font-medium transition-colors ${
+              rightPanelOpen ? 'text-[#2680eb] bg-[#2680eb]/10' : 'text-[#888] hover:text-white hover:bg-[#333]'
+            }`}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="1" y="2" width="7" height="12" rx="1" stroke="currentColor" strokeWidth="1.2" strokeOpacity="0.4" />
-              <rect x="10" y="2" width="5" height="12" rx="1" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
+            Inspector
           </button>
         </div>
       </div>
 
-      {/* ─── Main area ─── */}
+      {/* ─── Main content ─── */}
       <div className="flex flex-1 min-h-0">
-        {/* Left Panel */}
-        {leftPanelOpen && (
-          <div className="w-[300px] min-w-[300px] flex flex-col border-r border-[var(--color-adobe-border)] bg-[var(--color-adobe-panel)]">
-            <LeftPanel />
-          </div>
-        )}
-
-        {/* Center — Viewport */}
+        {/* Viewport */}
         <div className="flex-1 flex flex-col relative min-w-0">
           <div className="flex-1">
             <SceneRenderer
@@ -126,7 +119,7 @@ export default function EditorLayout() {
 
         {/* Right Panel */}
         {rightPanelOpen && (
-          <div className="w-[280px] min-w-[280px] flex flex-col border-l border-[var(--color-adobe-border)] bg-[var(--color-adobe-panel)]">
+          <div className="w-[300px] min-w-[300px] flex flex-col border-l border-[#333] bg-[#222]">
             <RightPanel />
           </div>
         )}

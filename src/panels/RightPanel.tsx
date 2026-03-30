@@ -20,15 +20,15 @@ export default function RightPanel() {
   return (
     <div className="flex flex-col h-full">
       {/* Tab bar */}
-      <div className="flex border-b border-[var(--color-adobe-border)] bg-[var(--color-adobe-surface)]">
+      <div className="flex border-b border-[#333] bg-[#252525]">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setRightTab(tab.key)}
-            className={`flex-1 px-2 py-2 text-[11px] font-medium transition-all border-b-2 ${
+            className={`flex-1 px-2 py-2.5 text-[11px] font-medium transition-all border-b-2 ${
               rightTab === tab.key
-                ? 'border-[var(--color-adobe-accent)] text-[var(--color-adobe-text)]'
-                : 'border-transparent text-[var(--color-adobe-text-tertiary)] hover:text-[var(--color-adobe-text-secondary)]'
+                ? 'border-[#2680eb] text-white'
+                : 'border-transparent text-[#777] hover:text-[#bbb]'
             }`}
           >
             {tab.label}
@@ -36,7 +36,7 @@ export default function RightPanel() {
         ))}
       </div>
 
-      {/* Tab content */}
+      {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {rightTab === 'graph' && <SceneGraphTab />}
         {rightTab === 'properties' && <PropertiesTab />}
