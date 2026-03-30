@@ -6,7 +6,7 @@ import logging
 import math
 import re
 from copy import deepcopy
-from typing import Any
+from typing import Any, List, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +60,9 @@ def _clamp(value: float, lo: float, hi: float) -> float:
 class SceneValidator:
     """Validates and repairs SceneDocument dicts."""
 
-    def validate(self, scene: dict) -> tuple[bool, list[str]]:
+    def validate(self, scene: dict) -> Tuple[bool, List[str]]:
         """Validate a scene dict. Returns (is_valid, list_of_issues)."""
-        issues: list[str] = []
+        issues: List[str] = []
 
         if not isinstance(scene, dict):
             return False, ["Scene is not a dict"]
@@ -166,7 +166,7 @@ class SceneValidator:
 
     # --- Private validation helpers ---
 
-    def _validate_light(self, light: dict, index: int, issues: list[str]) -> None:
+    def _validate_light(self, light: dict, index: int, issues: List[str]) -> None:
         prefix = f"lights[{index}]"
         lt = light.get("type")
         if lt not in _VALID_LIGHT_TYPES:
@@ -184,7 +184,7 @@ class SceneValidator:
         if intensity is not None and (not isinstance(intensity, (int, float)) or intensity < 0):
             issues.append(f"{prefix}: invalid intensity {intensity}")
 
-    def _validate_camera(self, camera: dict, issues: list[str]) -> None:
+    def _validate_camera(self, camera: dict, issues: List[str]) -> None:
         pos = camera.get("position")
         if pos and not _is_tuple3(pos):
             issues.append("camera.position is not a valid [x,y,z]")
@@ -195,7 +195,7 @@ class SceneValidator:
         if fov is not None and (not isinstance(fov, (int, float)) or fov < 1 or fov > 180):
             issues.append(f"camera.fov out of range: {fov}")
 
-    def _validate_object(self, obj: dict, index: int, issues: list[str]) -> None:
+    def _validate_object(self, obj: dict, index: int, issues: List[str]) -> None:
         prefix = f"objects[{index}]"
         if not obj.get("name"):
             issues.append(f"{prefix}: missing name")
@@ -237,12 +237,12 @@ class SceneValidator:
         if anim:
             self._validate_animation(anim, prefix, issues)
 
-    def _validate_geometry(self, geom: dict, prefix: str, issues: list[str]) -> None:
+    def _validate_geometry(self, geom: dict, prefix: str, issues: List[str]) -> None:
         gt = geom.get("type")
         if gt not in _VALID_GEOMETRY_TYPES:
             issues.append(f"{prefix}.geometry: invalid type '{gt}'")
 
-    def _validate_material(self, mat: dict, prefix: str, issues: list[str]) -> None:
+    def _validate_material(self, mat: dict, prefix: str, issues: List[str]) -> None:
         mt = mat.get("type", "standard")
         if mt not in _VALID_MATERIAL_TYPES:
             issues.append(f"{prefix}.material: invalid type '{mt}'")
@@ -253,7 +253,7 @@ class SceneValidator:
         if emissive and not _is_valid_hex(emissive):
             issues.append(f"{prefix}.material: invalid emissive '{emissive}'")
 
-    def _validate_animation(self, anim: dict, prefix: str, issues: list[str]) -> None:
+    def _validate_animation(self, anim: dict, prefix: str, issues: List[str]) -> None:
         atype = anim.get("type")
         if atype and atype not in _VALID_ANIMATION_TYPES:
             issues.append(f"{prefix}.animation: invalid type '{atype}'")

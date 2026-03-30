@@ -7,7 +7,7 @@ matches what the TypeScript / Three.js frontend expects.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal, Optional
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
 
@@ -29,8 +29,8 @@ class SceneEnvironment(BaseModel):
 
 
 class SceneCamera(BaseModel):
-    position: tuple[float, float, float] = (8, 6, 8)
-    look_at: tuple[float, float, float] = Field((0, 1, 0), alias="lookAt")
+    position: Tuple[float, float, float] = (8, 6, 8)
+    look_at: Tuple[float, float, float] = Field((0, 1, 0), alias="lookAt")
     fov: float = 50
 
     model_config = {"populate_by_name": True}
@@ -52,10 +52,10 @@ class SceneLight(BaseModel):
     type: LightType
     color: str = "#ffffff"
     intensity: float = 1.0
-    position: Optional[tuple[float, float, float]] = None
+    position: Optional[Tuple[float, float, float]] = None
     cast_shadow: bool = Field(False, alias="castShadow")
     ground_color: Optional[str] = Field(None, alias="groundColor")
-    target: Optional[tuple[float, float, float]] = None
+    target: Optional[Tuple[float, float, float]] = None
     distance: Optional[float] = None
     angle: Optional[float] = None
     penumbra: Optional[float] = None
@@ -152,7 +152,7 @@ class PulseAnimation(BaseModel):
 
 
 class OrbitAnimation(BaseModel):
-    center: tuple[float, float, float] = (0, 0, 0)
+    center: Tuple[float, float, float] = (0, 0, 0)
     radius: float
     speed: float
     phase: float = 0
@@ -163,11 +163,11 @@ class OrbitAnimation(BaseModel):
 
 
 class PathPoint(BaseModel):
-    position: tuple[float, float, float]
+    position: Tuple[float, float, float]
 
 
 class PathAnimation(BaseModel):
-    points: list[tuple[float, float, float]]
+    points: List[Tuple[float, float, float]]
     speed: float
     loop: bool = True
     face_direction: Optional[bool] = Field(None, alias="faceDirection")
@@ -176,16 +176,16 @@ class PathAnimation(BaseModel):
 
 
 class KeyframeStep(BaseModel):
-    position: Optional[tuple[float, float, float]] = None
-    rotation: Optional[tuple[float, float, float]] = None
-    scale: Optional[tuple[float, float, float] | float] = None
+    position: Optional[Tuple[float, float, float]] = None
+    rotation: Optional[Tuple[float, float, float]] = None
+    scale: Optional[Union[Tuple[float, float, float], float]] = None
     dur: float
     ease: str = "inOutCubic"
 
 
 class KeyframeAnimation(BaseModel):
     loop: bool = True
-    frames: list[KeyframeStep]
+    frames: List[KeyframeStep]
     duration: Optional[float] = None
 
 
@@ -222,21 +222,21 @@ class SceneAnimation(BaseModel):
 
     # orbit
     orbit: Optional[OrbitAnimation] = None
-    center: Optional[tuple[float, float, float]] = None
+    center: Optional[Tuple[float, float, float]] = None
     radius: Optional[float] = None
     face_center: Optional[bool] = Field(None, alias="faceCenter")
     tilt: Optional[float] = None
 
     # path
     path: Optional[PathAnimation] = None
-    points: Optional[list[tuple[float, float, float]]] = None
+    points: Optional[List[Tuple[float, float, float]]] = None
     loop: Optional[bool] = None
     face_direction: Optional[bool] = Field(None, alias="faceDirection")
 
     # keyframes
     keyframes: Optional[KeyframeAnimation] = None
     duration: Optional[float] = None
-    frames: Optional[list[KeyframeStep]] = None
+    frames: Optional[List[KeyframeStep]] = None
 
     # emissivePulse
     emissive_pulse: Optional[EmissivePulseAnimation] = Field(None, alias="emissivePulse")
@@ -244,7 +244,7 @@ class SceneAnimation(BaseModel):
     max_val: Optional[float] = Field(None, alias="max")
 
     # partAnimations
-    part_animations: Optional[list[dict]] = Field(None, alias="partAnims")
+    part_animations: Optional[List[dict]] = Field(None, alias="partAnims")
 
     model_config = {"populate_by_name": True}
 
@@ -257,9 +257,9 @@ class ObjectPart(BaseModel):
     name: Optional[str] = None
     geometry: SceneGeometry
     material: Optional[SceneMaterial] = None
-    position: Optional[tuple[float, float, float]] = None
-    rotation: Optional[tuple[float, float, float]] = None
-    scale: Optional[tuple[float, float, float] | float] = None
+    position: Optional[Tuple[float, float, float]] = None
+    rotation: Optional[Tuple[float, float, float]] = None
+    scale: Optional[Union[Tuple[float, float, float], float]] = None
     cast_shadow: Optional[bool] = Field(None, alias="castShadow")
     receive_shadow: Optional[bool] = Field(None, alias="receiveShadow")
 
@@ -271,7 +271,7 @@ class ObjectPart(BaseModel):
 # ---------------------------------------------------------------------------
 
 class InteractionState(BaseModel):
-    scale: Optional[tuple[float, float, float]] = None
+    scale: Optional[Tuple[float, float, float]] = None
     emissive_intensity: Optional[float] = Field(None, alias="emissiveIntensity")
     color: Optional[str] = None
     duration: Optional[float] = None
@@ -292,16 +292,16 @@ class SceneObject(BaseModel):
     name: str
     geometry: Optional[SceneGeometry] = None
     material: Optional[SceneMaterial] = None
-    parts: Optional[list[ObjectPart]] = None
-    position: Optional[tuple[float, float, float]] = None
-    rotation: Optional[tuple[float, float, float]] = None
-    scale: Optional[tuple[float, float, float] | float] = None
+    parts: Optional[List[ObjectPart]] = None
+    position: Optional[Tuple[float, float, float]] = None
+    rotation: Optional[Tuple[float, float, float]] = None
+    scale: Optional[Union[Tuple[float, float, float], float]] = None
     cast_shadow: Optional[bool] = Field(None, alias="castShadow")
     receive_shadow: Optional[bool] = Field(None, alias="receiveShadow")
     animation: Optional[SceneAnimation] = None
     states: Optional[StateSpec] = None
     semantic_role: Optional[str] = Field(None, alias="semanticRole")
-    semantic_tags: Optional[list[str]] = Field(None, alias="semanticTags")
+    semantic_tags: Optional[List[str]] = Field(None, alias="semanticTags")
 
     model_config = {"populate_by_name": True}
 
@@ -345,10 +345,10 @@ class SceneDocument(BaseModel):
     scene: Optional[dict] = None
     environment: SceneEnvironment = Field(default_factory=SceneEnvironment)
     camera: SceneCamera = Field(default_factory=SceneCamera)
-    lights: list[SceneLight] = []
-    objects: list[SceneObject] = []
+    lights: List[SceneLight] = []
+    objects: List[SceneObject] = []
     ground: Optional[dict] = None
-    revisions: list[SceneRevision] = []
+    revisions: List[SceneRevision] = []
 
     model_config = {"populate_by_name": True}
 

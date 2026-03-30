@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any
+from typing import Any, Dict, List
 
 import anthropic
 
@@ -138,7 +138,7 @@ class RevisionEngine:
     def __init__(self) -> None:
         self._client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
 
-    async def apply_revision(self, scene: dict, instruction: str) -> dict[str, Any]:
+    async def apply_revision(self, scene: dict, instruction: str) -> Dict[str, Any]:
         """Apply a revision instruction to a scene.
 
         Returns a dict with keys:
@@ -202,7 +202,7 @@ class RevisionEngine:
         obj_diff = revised_obj_count - original_obj_count
         light_diff = revised_light_count - original_light_count
 
-        summary_parts: list[str] = [f'Applied revision: "{instruction}".']
+        summary_parts: List[str] = [f'Applied revision: "{instruction}".']
 
         if obj_diff > 0:
             summary_parts.append(f"Added {obj_diff} object(s).")
