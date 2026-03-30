@@ -4,60 +4,40 @@ import { useCallback } from 'react';
 import { useSceneStore } from '@/store/scene-store';
 import { SceneObject } from '@/schema/scene';
 
-// ─── Helpers ─────────────────────────────────────────────
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[10px] font-semibold text-white/25 uppercase tracking-[0.1em] mb-2 mt-5 first:mt-0">
-      {children}
-    </h3>
+    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-adobe-surface)] border-b border-[var(--color-adobe-border)]">
+      <svg width="7" height="7" viewBox="0 0 8 8" fill="currentColor" className="text-[var(--color-adobe-text-tertiary)] rotate-90">
+        <polygon points="2,0 8,4 2,8" />
+      </svg>
+      <span className="text-[11px] font-semibold text-[var(--color-adobe-text-secondary)] uppercase tracking-[0.04em]">
+        {children}
+      </span>
+    </div>
   );
 }
 
-function AxisInput({
-  axis,
-  value,
-  onChange,
-}: {
-  axis: 'X' | 'Y' | 'Z';
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  const colors = {
-    X: 'text-rose-400/70',
-    Y: 'text-emerald-400/70',
-    Z: 'text-blue-400/70',
-  };
-
+function AxisInput({ axis, value, onChange }: { axis: 'X' | 'Y' | 'Z'; value: number; onChange: (v: number) => void }) {
+  const colors = { X: '#e34850', Y: '#2d9d78', Z: '#2680eb' };
   return (
-    <div className="flex items-center gap-1.5 flex-1 min-w-0">
-      <span className={`text-[10px] font-semibold ${colors[axis]} w-3 text-center shrink-0`}>
-        {axis}
-      </span>
+    <div className="flex items-center gap-1 flex-1 min-w-0">
+      <span className="text-[10px] font-bold w-3 text-center shrink-0" style={{ color: colors[axis] }}>{axis}</span>
       <input
         type="number"
         step={0.1}
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-        className="w-full bg-white/[0.04] border border-white/[0.06] rounded-md px-2 py-1.5 text-[11px] text-white/70 font-mono tabular-nums focus:outline-none focus:border-violet-500/30 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        className="w-full bg-[var(--color-adobe-bg)] border border-[var(--color-adobe-border)] rounded px-1.5 py-1 text-[11px] text-[var(--color-adobe-text)] font-mono tabular-nums focus:outline-none focus:border-[var(--color-adobe-accent)] transition-colors"
       />
     </div>
   );
 }
 
-function Vec3Row({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: [number, number, number];
-  onChange: (v: [number, number, number]) => void;
-}) {
+function Vec3Row({ label, value, onChange }: { label: string; value: [number, number, number]; onChange: (v: [number, number, number]) => void }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-[11px] text-white/35 font-medium">{label}</span>
-      <div className="flex gap-1.5">
+    <div className="flex items-center gap-2 px-3 py-1">
+      <span className="text-[11px] text-[var(--color-adobe-text-secondary)] w-16 shrink-0">{label}</span>
+      <div className="flex gap-1 flex-1">
         <AxisInput axis="X" value={value[0]} onChange={(v) => onChange([v, value[1], value[2]])} />
         <AxisInput axis="Y" value={value[1]} onChange={(v) => onChange([value[0], v, value[2]])} />
         <AxisInput axis="Z" value={value[2]} onChange={(v) => onChange([value[0], value[1], v])} />
@@ -66,43 +46,15 @@ function Vec3Row({
   );
 }
 
-function SliderField({
-  label,
-  value,
-  onChange,
-  min = 0,
-  max = 1,
-  step = 0.01,
-}: {
-  label: string;
-  value: number;
-  onChange: (v: number) => void;
-  min?: number;
-  max?: number;
-  step?: number;
-}) {
+function SliderRow({ label, value, onChange, min = 0, max = 1 }: { label: string; value: number; onChange: (v: number) => void; min?: number; max?: number }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] text-white/35 font-medium">{label}</span>
-        <span className="text-[10px] text-white/20 font-mono tabular-nums">
-          {value.toFixed(2)}
-        </span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full h-1 bg-white/[0.06] rounded-full appearance-none cursor-pointer accent-violet-500 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-violet-400 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-violet-500/20"
-      />
+    <div className="flex items-center gap-2 px-3 py-1">
+      <span className="text-[11px] text-[var(--color-adobe-text-secondary)] w-16 shrink-0">{label}</span>
+      <input type="range" min={min} max={max} step={0.01} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} className="flex-1" />
+      <span className="text-[10px] text-[var(--color-adobe-text-tertiary)] font-mono w-8 text-right">{value.toFixed(2)}</span>
     </div>
   );
 }
-
-// ─── Main Component ──────────────────────────────────────
 
 export default function PropertiesTab() {
   const scene = useSceneStore((s) => s.scene);
@@ -127,31 +79,25 @@ export default function PropertiesTab() {
     }
   }, [selectedObjectName, removeObject, selectObject]);
 
-  // Empty state
   if (!obj) {
     return (
       <div className="flex flex-col items-center justify-center h-full py-16 text-center px-4">
-        <div className="text-white/10 text-2xl mb-3">◇</div>
-        <p className="text-[12px] text-white/20">No object selected</p>
-        <p className="text-[11px] text-white/10 mt-1">
-          Select an object from the scene graph
-        </p>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-[var(--color-adobe-text-tertiary)] mb-3 opacity-40">
+          <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <p className="text-[12px] text-[var(--color-adobe-text-tertiary)]">No object selected</p>
+        <p className="text-[11px] text-[var(--color-adobe-text-tertiary)] opacity-60 mt-1">Click an object in the viewport or scene panel</p>
       </div>
     );
   }
 
-  // Resolve material — direct or from first part
   const material = obj.material ?? obj.parts?.[0]?.material ?? null;
-
-  // Resolve position, rotation, scale
   const position: [number, number, number] = obj.position ?? [0, 0, 0];
   const rotation: [number, number, number] = obj.rotation ?? [0, 0, 0];
   const scaleRaw = obj.scale ?? [1, 1, 1];
-  const scale: [number, number, number] = typeof scaleRaw === 'number'
-    ? [scaleRaw, scaleRaw, scaleRaw]
-    : scaleRaw;
+  const scale: [number, number, number] = typeof scaleRaw === 'number' ? [scaleRaw, scaleRaw, scaleRaw] : scaleRaw;
 
-  // Animation tags
   const animationTypes: string[] = [];
   if (obj.animation) {
     const a = obj.animation;
@@ -166,53 +112,35 @@ export default function PropertiesTab() {
   }
 
   return (
-    <div className="px-4 py-3">
-      {/* Object name */}
-      <div className="flex items-center gap-2.5 mb-1">
-        <span
-          className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-            obj.parts && obj.parts.length > 0 ? 'bg-indigo-400' : 'bg-slate-400'
-          }`}
-        />
-        <h2 className="text-[14px] font-semibold text-white/80 truncate">{obj.name}</h2>
-      </div>
-      {obj.geometry && (
-        <p className="text-[11px] text-white/20 mb-2 ml-5 capitalize">{obj.geometry.type}</p>
-      )}
-      {obj.parts && obj.parts.length > 0 && (
-        <p className="text-[11px] text-white/20 mb-2 ml-5">
-          Compound — {obj.parts.length} parts
+    <div className="flex flex-col">
+      {/* Object header */}
+      <div className="px-3 py-2.5 border-b border-[var(--color-adobe-border)]">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-sm shrink-0 ${obj.parts && obj.parts.length > 0 ? 'bg-[var(--color-adobe-accent)]' : 'bg-[var(--color-adobe-text-tertiary)]'}`} />
+          <h2 className="text-[13px] font-semibold text-[var(--color-adobe-text)] truncate">{obj.name}</h2>
+        </div>
+        <p className="text-[11px] text-[var(--color-adobe-text-tertiary)] mt-0.5 ml-4">
+          {obj.parts && obj.parts.length > 0
+            ? `Compound · ${obj.parts.length} parts`
+            : obj.geometry?.type ?? 'Object'}
         </p>
-      )}
+      </div>
 
       {/* Transform */}
-      <SectionLabel>Transform</SectionLabel>
-      <div className="flex flex-col gap-3">
-        <Vec3Row
-          label="Position"
-          value={position}
-          onChange={(v) => handleUpdate({ position: v })}
-        />
-        <Vec3Row
-          label="Rotation"
-          value={rotation}
-          onChange={(v) => handleUpdate({ rotation: v })}
-        />
-        <Vec3Row
-          label="Scale"
-          value={scale}
-          onChange={(v) => handleUpdate({ scale: v })}
-        />
+      <SectionHeader>Transform</SectionHeader>
+      <div className="py-1.5">
+        <Vec3Row label="Position" value={position} onChange={(v) => handleUpdate({ position: v })} />
+        <Vec3Row label="Rotation" value={rotation} onChange={(v) => handleUpdate({ rotation: v })} />
+        <Vec3Row label="Scale" value={scale} onChange={(v) => handleUpdate({ scale: v })} />
       </div>
 
       {/* Material */}
       {material && (
         <>
-          <SectionLabel>Material</SectionLabel>
-          <div className="flex flex-col gap-3">
-            {/* Color */}
-            <div className="flex items-center gap-2.5">
-              <span className="text-[11px] text-white/35 font-medium flex-1">Color</span>
+          <SectionHeader>Material</SectionHeader>
+          <div className="py-1.5">
+            <div className="flex items-center gap-2 px-3 py-1">
+              <span className="text-[11px] text-[var(--color-adobe-text-secondary)] w-16 shrink-0">Color</span>
               <input
                 type="color"
                 value={material.color}
@@ -221,49 +149,34 @@ export default function PropertiesTab() {
                     handleUpdate({ material: { ...obj.material, color: e.target.value } });
                   } else if (obj.parts?.[0]?.material) {
                     const newParts = [...obj.parts];
-                    newParts[0] = {
-                      ...newParts[0],
-                      material: { ...newParts[0].material!, color: e.target.value },
-                    };
+                    newParts[0] = { ...newParts[0], material: { ...newParts[0].material!, color: e.target.value } };
                     handleUpdate({ parts: newParts });
                   }
                 }}
-                className="w-7 h-7 rounded-md border border-white/10 bg-transparent cursor-pointer [&::-webkit-color-swatch-wrapper]:p-0.5 [&::-webkit-color-swatch]:rounded-[3px] [&::-webkit-color-swatch]:border-none"
+                className="w-6 h-6 rounded border border-[var(--color-adobe-border)] bg-transparent cursor-pointer [&::-webkit-color-swatch-wrapper]:p-0.5 [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch]:border-none"
               />
-              <span className="text-[10px] text-white/20 font-mono">{material.color}</span>
+              <span className="text-[11px] text-[var(--color-adobe-text-tertiary)] font-mono">{material.color}</span>
             </div>
-
-            {/* Roughness */}
-            <SliderField
+            <SliderRow
               label="Roughness"
               value={material.roughness}
               onChange={(v) => {
-                if (obj.material) {
-                  handleUpdate({ material: { ...obj.material, roughness: v } });
-                } else if (obj.parts?.[0]?.material) {
+                if (obj.material) handleUpdate({ material: { ...obj.material, roughness: v } });
+                else if (obj.parts?.[0]?.material) {
                   const newParts = [...obj.parts];
-                  newParts[0] = {
-                    ...newParts[0],
-                    material: { ...newParts[0].material!, roughness: v },
-                  };
+                  newParts[0] = { ...newParts[0], material: { ...newParts[0].material!, roughness: v } };
                   handleUpdate({ parts: newParts });
                 }
               }}
             />
-
-            {/* Metalness */}
-            <SliderField
+            <SliderRow
               label="Metalness"
               value={material.metalness}
               onChange={(v) => {
-                if (obj.material) {
-                  handleUpdate({ material: { ...obj.material, metalness: v } });
-                } else if (obj.parts?.[0]?.material) {
+                if (obj.material) handleUpdate({ material: { ...obj.material, metalness: v } });
+                else if (obj.parts?.[0]?.material) {
                   const newParts = [...obj.parts];
-                  newParts[0] = {
-                    ...newParts[0],
-                    material: { ...newParts[0].material!, metalness: v },
-                  };
+                  newParts[0] = { ...newParts[0], material: { ...newParts[0].material!, metalness: v } };
                   handleUpdate({ parts: newParts });
                 }
               }}
@@ -275,13 +188,10 @@ export default function PropertiesTab() {
       {/* Animation */}
       {animationTypes.length > 0 && (
         <>
-          <SectionLabel>Animation</SectionLabel>
-          <div className="flex flex-wrap gap-1.5">
+          <SectionHeader>Animation</SectionHeader>
+          <div className="flex flex-wrap gap-1 px-3 py-2">
             {animationTypes.map((type) => (
-              <span
-                key={type}
-                className="text-[10px] px-2 py-1 rounded-md bg-violet-500/[0.08] text-violet-300/60 capitalize"
-              >
+              <span key={type} className="text-[10px] px-2 py-0.5 rounded bg-[var(--color-adobe-accent)]/10 text-[var(--color-adobe-accent)] capitalize font-medium">
                 {type}
               </span>
             ))}
@@ -292,33 +202,27 @@ export default function PropertiesTab() {
       {/* Semantic */}
       {(obj.semanticRole || (obj.semanticTags && obj.semanticTags.length > 0)) && (
         <>
-          <SectionLabel>Semantic</SectionLabel>
-          <div className="flex flex-wrap gap-1.5">
+          <SectionHeader>Semantic</SectionHeader>
+          <div className="flex flex-wrap gap-1 px-3 py-2">
             {obj.semanticRole && (
-              <span className="text-[10px] px-2 py-1 rounded-md bg-white/[0.04] text-white/30 capitalize">
-                {obj.semanticRole}
-              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-[var(--color-adobe-elevated)] text-[var(--color-adobe-text-secondary)] capitalize">{obj.semanticRole}</span>
             )}
             {obj.semanticTags?.map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] px-2 py-1 rounded-md bg-white/[0.03] text-white/20"
-              >
-                {tag}
-              </span>
+              <span key={tag} className="text-[10px] px-2 py-0.5 rounded bg-[var(--color-adobe-elevated)] text-[var(--color-adobe-text-tertiary)]">{tag}</span>
             ))}
           </div>
         </>
       )}
 
-      {/* Actions */}
-      <SectionLabel>Actions</SectionLabel>
-      <button
-        onClick={handleDelete}
-        className="w-full px-3 py-2 rounded-lg bg-rose-500/[0.06] border border-rose-500/10 text-rose-300/60 text-[11px] font-medium hover:bg-rose-500/[0.1] hover:text-rose-300/80 transition-all duration-200"
-      >
-        Delete Object
-      </button>
+      {/* Delete */}
+      <div className="p-3 mt-auto">
+        <button
+          onClick={handleDelete}
+          className="w-full px-3 py-1.5 rounded text-[11px] font-medium text-[var(--color-adobe-danger)] bg-[var(--color-adobe-danger)]/8 border border-[var(--color-adobe-danger)]/15 hover:bg-[var(--color-adobe-danger)]/15 transition-colors"
+        >
+          Delete Object
+        </button>
+      </div>
     </div>
   );
 }

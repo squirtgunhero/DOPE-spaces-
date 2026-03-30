@@ -23,24 +23,23 @@ export default function HistoryTab() {
   const currentVersionIndex = useSceneStore((s) => s.currentVersionIndex);
   const restoreVersion = useSceneStore((s) => s.restoreVersion);
 
-  // Empty state
   if (versions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full py-16 text-center px-4">
-        <div className="text-white/10 text-2xl mb-3">↻</div>
-        <p className="text-[12px] text-white/20">No versions yet</p>
-        <p className="text-[11px] text-white/10 mt-1">
-          Generate or revise a scene to create history
-        </p>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-[var(--color-adobe-text-tertiary)] mb-3 opacity-40">
+          <path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+        <p className="text-[12px] text-[var(--color-adobe-text-tertiary)]">No version history</p>
+        <p className="text-[11px] text-[var(--color-adobe-text-tertiary)] opacity-60 mt-1">Generate or revise a scene to create snapshots</p>
       </div>
     );
   }
 
-  // Show in reverse chronological order
   const reversed = [...versions].map((v, i) => ({ ...v, originalIndex: i })).reverse();
 
   return (
-    <div className="px-4 py-3 flex flex-col gap-1">
+    <div className="flex flex-col">
       {reversed.map((version) => {
         const isCurrent = version.originalIndex === currentVersionIndex;
         const isGeneration = !!version.prompt;
@@ -49,53 +48,38 @@ export default function HistoryTab() {
           <button
             key={version.id}
             onClick={() => restoreVersion(version.originalIndex)}
-            className={`w-full text-left px-3 py-2.5 rounded-lg border transition-all duration-150 ${
+            className={`w-full text-left px-3 py-2.5 border-b border-[var(--color-adobe-border)] transition-colors ${
               isCurrent
-                ? 'bg-violet-500/[0.08] border-violet-500/15'
-                : 'border-transparent hover:bg-white/[0.03]'
+                ? 'bg-[var(--color-adobe-accent)]/8'
+                : 'hover:bg-[var(--color-adobe-elevated)]'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
-              {/* Version badge */}
-              <span
-                className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                  isCurrent
-                    ? 'bg-violet-500/20 text-violet-300/70'
-                    : 'bg-white/[0.04] text-white/25'
-                }`}
-              >
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                isCurrent
+                  ? 'bg-[var(--color-adobe-accent)]/20 text-[var(--color-adobe-accent)]'
+                  : 'bg-[var(--color-adobe-elevated)] text-[var(--color-adobe-text-tertiary)]'
+              }`}>
                 v{version.originalIndex + 1}
               </span>
-
-              {/* Type badge */}
-              <span
-                className={`text-[9px] uppercase tracking-wider ${
-                  isGeneration ? 'text-emerald-400/40' : 'text-amber-400/40'
-                }`}
-              >
-                {isGeneration ? 'generated' : 'revised'}
+              <span className={`text-[10px] uppercase tracking-wider font-medium ${
+                isGeneration ? 'text-[var(--color-adobe-success)]' : 'text-[var(--color-adobe-warning)]'
+              }`}>
+                {isGeneration ? 'Generated' : 'Revised'}
               </span>
-
-              {/* Time */}
-              <span className="text-[10px] text-white/15 ml-auto font-mono">
+              <span className="text-[10px] text-[var(--color-adobe-text-tertiary)] ml-auto font-mono">
                 {formatRelativeTime(version.timestamp)}
               </span>
             </div>
-
-            {/* Summary */}
             <p className={`text-[11px] leading-relaxed ${
-              isCurrent ? 'text-white/50' : 'text-white/30'
+              isCurrent ? 'text-[var(--color-adobe-text-secondary)]' : 'text-[var(--color-adobe-text-tertiary)]'
             }`}>
               {version.changesSummary}
             </p>
-
-            {/* Current indicator */}
             {isCurrent && (
-              <div className="mt-1.5">
-                <span className="text-[9px] text-violet-400/50 uppercase tracking-wider font-medium">
-                  Current
-                </span>
-              </div>
+              <span className="inline-block mt-1 text-[9px] text-[var(--color-adobe-accent)] uppercase tracking-wider font-bold">
+                Current
+              </span>
             )}
           </button>
         );

@@ -2,32 +2,61 @@
 
 import { useSceneStore } from '@/store/scene-store';
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[10px] font-semibold text-white/25 uppercase tracking-[0.1em] mb-1.5 mt-4 first:mt-0">
-      {children}
-    </h3>
+    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--color-adobe-surface)] border-b border-[var(--color-adobe-border)]">
+      <svg width="7" height="7" viewBox="0 0 8 8" fill="currentColor" className="text-[var(--color-adobe-text-tertiary)] rotate-90">
+        <polygon points="2,0 8,4 2,8" />
+      </svg>
+      <span className="text-[11px] font-semibold text-[var(--color-adobe-text-secondary)] uppercase tracking-[0.04em]">
+        {children}
+      </span>
+    </div>
   );
 }
 
-function ColorSwatch({ color }: { color: string }) {
+function TreeRow({
+  icon,
+  label,
+  detail,
+  color,
+  selected,
+  onClick,
+  indent = 0,
+}: {
+  icon?: React.ReactNode;
+  label: string;
+  detail?: string;
+  color?: string;
+  selected?: boolean;
+  onClick?: () => void;
+  indent?: number;
+}) {
   return (
-    <span
-      className="inline-block w-3 h-3 rounded-[3px] border border-white/10 shrink-0"
-      style={{ backgroundColor: color }}
-    />
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 w-full px-3 py-[5px] text-left transition-colors ${
+        selected
+          ? 'bg-[var(--color-adobe-accent)]/15 text-[var(--color-adobe-text)]'
+          : 'text-[var(--color-adobe-text-secondary)] hover:bg-[var(--color-adobe-elevated)]'
+      }`}
+      style={{ paddingLeft: `${12 + indent * 16}px` }}
+    >
+      {icon && <span className="w-4 text-center shrink-0 text-[10px]">{icon}</span>}
+      {color && (
+        <span
+          className="w-2.5 h-2.5 rounded-sm shrink-0 border border-white/10"
+          style={{ backgroundColor: color }}
+        />
+      )}
+      <span className="text-[11px] truncate flex-1">{label}</span>
+      {detail && (
+        <span className="text-[10px] text-[var(--color-adobe-text-tertiary)] font-mono shrink-0">
+          {detail}
+        </span>
+      )}
+    </button>
   );
-}
-
-function LightTypeIcon({ type }: { type: string }) {
-  const icons: Record<string, string> = {
-    directional: '☀',
-    point: '●',
-    spot: '◉',
-    hemisphere: '◑',
-    ambient: '○',
-  };
-  return <span className="text-[10px] text-white/40">{icons[type] || '●'}</span>;
 }
 
 export default function SceneGraphTab() {
@@ -37,70 +66,50 @@ export default function SceneGraphTab() {
 
   const { environment, camera, lights, objects } = scene;
 
+  if (objects.length === 0 && lights.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full py-16 text-center px-4">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-[var(--color-adobe-text-tertiary)] mb-3 opacity-40">
+          <path d="M12 2L22 8.5V15.5L12 22L2 15.5V8.5L12 2Z" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+        <p className="text-[12px] text-[var(--color-adobe-text-tertiary)]">No scene loaded</p>
+        <p className="text-[11px] text-[var(--color-adobe-text-tertiary)] opacity-60 mt-1">Generate a scene to view its hierarchy</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="px-4 py-3 flex flex-col gap-1">
+    <div className="flex flex-col">
       {/* Environment */}
-      <SectionLabel>Environment</SectionLabel>
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg">
-          <ColorSwatch color={environment.background} />
-          <span className="text-[12px] text-white/50">Background</span>
-          <span className="text-[10px] text-white/20 ml-auto font-mono">
-            {environment.background}
-          </span>
-        </div>
+      <SectionHeader>Environment</SectionHeader>
+      <div className="py-0.5">
+        <TreeRow icon="◐" label="Background" detail={environment.background} color={environment.background} indent={0} />
+        <TreeRow icon="☀" label="Ambient" detail={environment.ambientIntensity.toFixed(2)} indent={0} />
         {environment.fogColor && (
-          <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg">
-            <span className="text-[10px] text-white/40">🌫</span>
-            <span className="text-[12px] text-white/50">Fog</span>
-            <span className="text-[10px] text-white/20 ml-auto font-mono">
-              d={environment.fogDensity?.toFixed(2)}
-            </span>
-          </div>
+          <TreeRow icon="◌" label="Fog" detail={`d=${environment.fogDensity?.toFixed(2)}`} indent={0} />
         )}
-        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg">
-          <span className="text-[10px] text-white/40">◐</span>
-          <span className="text-[12px] text-white/50">Ambient</span>
-          <span className="text-[10px] text-white/20 ml-auto font-mono">
-            {environment.ambientIntensity.toFixed(2)}
-          </span>
-        </div>
       </div>
 
       {/* Camera */}
-      <SectionLabel>Camera</SectionLabel>
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg">
-          <span className="text-[10px] text-white/40">📷</span>
-          <span className="text-[12px] text-white/50">Position</span>
-          <span className="text-[10px] text-white/20 ml-auto font-mono">
-            {camera.position.map((v) => v.toFixed(1)).join(', ')}
-          </span>
-        </div>
-        <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg">
-          <span className="text-[10px] text-white/40">◆</span>
-          <span className="text-[12px] text-white/50">FOV</span>
-          <span className="text-[10px] text-white/20 ml-auto font-mono">{camera.fov}°</span>
-        </div>
+      <SectionHeader>Camera</SectionHeader>
+      <div className="py-0.5">
+        <TreeRow icon="▣" label="Position" detail={camera.position.map((v) => v.toFixed(1)).join(', ')} indent={0} />
+        <TreeRow icon="◆" label="FOV" detail={`${camera.fov}°`} indent={0} />
       </div>
 
       {/* Lights */}
       {lights.length > 0 && (
         <>
-          <SectionLabel>Lights ({lights.length})</SectionLabel>
-          <div className="flex flex-col gap-0.5">
+          <SectionHeader>Lights ({lights.length})</SectionHeader>
+          <div className="py-0.5">
             {lights.map((light, i) => (
-              <div
+              <TreeRow
                 key={i}
-                className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.03] transition-colors"
-              >
-                <LightTypeIcon type={light.type} />
-                <ColorSwatch color={light.color} />
-                <span className="text-[12px] text-white/50 capitalize">{light.type}</span>
-                <span className="text-[10px] text-white/20 ml-auto font-mono">
-                  {light.intensity.toFixed(1)}
-                </span>
-              </div>
+                color={light.color}
+                label={light.type}
+                detail={light.intensity.toFixed(1)}
+                indent={0}
+              />
             ))}
           </div>
         </>
@@ -109,69 +118,30 @@ export default function SceneGraphTab() {
       {/* Objects */}
       {objects.length > 0 && (
         <>
-          <SectionLabel>Objects ({objects.length})</SectionLabel>
-          <div className="flex flex-col gap-0.5">
+          <SectionHeader>Objects ({objects.length})</SectionHeader>
+          <div className="py-0.5">
             {objects.map((obj) => {
               const isCompound = !!obj.parts && obj.parts.length > 0;
               const isSelected = selectedObjectName === obj.name;
-              const hasAnimation = !!obj.animation;
 
               return (
-                <button
+                <TreeRow
                   key={obj.name}
+                  icon={isCompound ? '▤' : '■'}
+                  label={obj.name}
+                  detail={
+                    isCompound
+                      ? `${obj.parts!.length} parts`
+                      : obj.geometry?.type ?? ''
+                  }
+                  selected={isSelected}
                   onClick={() => selectObject(obj.name)}
-                  className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-left transition-all duration-150 w-full ${
-                    isSelected
-                      ? 'bg-violet-500/[0.08] border border-violet-500/15'
-                      : 'border border-transparent hover:bg-white/[0.03]'
-                  }`}
-                >
-                  {/* Type dot */}
-                  <span
-                    className={`w-2 h-2 rounded-full shrink-0 ${
-                      isCompound ? 'bg-indigo-400' : 'bg-slate-400'
-                    }`}
-                  />
-
-                  {/* Name */}
-                  <span
-                    className={`text-[12px] truncate ${
-                      isSelected ? 'text-white/80' : 'text-white/50'
-                    }`}
-                  >
-                    {obj.name}
-                  </span>
-
-                  {/* Indicators */}
-                  <div className="flex items-center gap-1.5 ml-auto shrink-0">
-                    {obj.semanticRole && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.04] text-white/25 uppercase tracking-wider">
-                        {obj.semanticRole}
-                      </span>
-                    )}
-                    {hasAnimation && (
-                      <span className="text-[9px] text-violet-400/60">●</span>
-                    )}
-                    {isCompound && (
-                      <span className="text-[10px] text-white/20 font-mono">
-                        {obj.parts!.length}p
-                      </span>
-                    )}
-                  </div>
-                </button>
+                  indent={0}
+                />
               );
             })}
           </div>
         </>
-      )}
-
-      {/* Empty state */}
-      {objects.length === 0 && lights.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="text-white/10 text-2xl mb-3">◇</div>
-          <p className="text-[12px] text-white/20">No scene loaded</p>
-          <p className="text-[11px] text-white/10 mt-1">Generate a scene to see its graph</p>
-        </div>
       )}
     </div>
   );
