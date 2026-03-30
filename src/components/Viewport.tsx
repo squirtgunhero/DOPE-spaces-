@@ -276,27 +276,21 @@ const Viewport = forwardRef<ViewportHandle, ViewportProps>(function Viewport(
   // ------------------------------------------------------------------
 
   const btnClass =
-    'bg-black/40 backdrop-blur-sm border border-white/10 text-white/70 hover:text-white hover:bg-white/10 rounded-lg px-3 py-1.5 text-sm cursor-pointer select-none transition-colors';
+    'bg-black/30 backdrop-blur-md border border-white/[0.06] text-white/50 hover:text-white/80 hover:bg-white/[0.08] rounded-xl px-3.5 py-2 text-[12px] font-medium cursor-pointer select-none transition-all duration-200';
 
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className ?? ''}`}>
-      {/* Info badge — top-left */}
-      <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 pointer-events-none select-none">
-        <span className="inline-block w-2 h-2 rounded-full bg-purple-500" />
-        <span className="text-xs text-white/60 tracking-wide">DOPE [spaces]</span>
-      </div>
-
       {/* Tool buttons — top-right */}
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           type="button"
           className={btnClass}
           onClick={() => setPaused((p) => !p)}
         >
-          {paused ? '▶ Play' : '⏸ Pause'}
+          {paused ? 'Play' : 'Pause'}
         </button>
         <button type="button" className={btnClass} onClick={resetCamera}>
-          ↺ Reset Camera
+          Reset
         </button>
       </div>
     </div>

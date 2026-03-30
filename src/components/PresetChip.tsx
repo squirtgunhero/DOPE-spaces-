@@ -10,18 +10,17 @@ export default function PresetChip({ name, onClick, active = false }: PresetChip
   return (
     <button
       onClick={onClick}
-      className={`relative bg-white/[0.03] hover:bg-white/[0.06] border rounded-xl p-3 transition-all duration-200 cursor-pointer hover:scale-[1.02] text-left ${
+      className={`relative rounded-xl px-3.5 py-3 text-left transition-all duration-200 cursor-pointer group ${
         active
-          ? 'border-violet-500/40 bg-violet-500/[0.08]'
-          : 'border-white/[0.06] hover:border-white/[0.12]'
+          ? 'bg-violet-500/[0.12] border border-violet-500/30 shadow-sm shadow-violet-500/10'
+          : 'bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/[0.1]'
       }`}
     >
-      <div className="flex items-center gap-2">
-        {active && (
-          <span className="w-1.5 h-1.5 rounded-full bg-violet-400 shrink-0" />
-        )}
-        <span className="text-xs font-medium text-white/80">{name}</span>
-      </div>
+      <span className={`text-[13px] font-medium transition-colors duration-200 ${
+        active ? 'text-violet-300' : 'text-white/60 group-hover:text-white/80'
+      }`}>
+        {name}
+      </span>
     </button>
   );
 }

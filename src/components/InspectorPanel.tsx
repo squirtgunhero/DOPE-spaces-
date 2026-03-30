@@ -22,46 +22,46 @@ interface InspectorPanelProps {
   onTriggerState?: (objectName: string, stateName: string) => void;
 }
 
-const ANIMATION_TAG_COLORS: Record<string, string> = {
-  rotate: 'bg-blue-500/20 text-blue-300',
-  float: 'bg-cyan-500/20 text-cyan-300',
-  sway: 'bg-green-500/20 text-green-300',
-  pulse: 'bg-yellow-500/20 text-yellow-300',
-  orbit: 'bg-purple-500/20 text-purple-300',
-  path: 'bg-orange-500/20 text-orange-300',
-  keyframes: 'bg-pink-500/20 text-pink-300',
-  emissivePulse: 'bg-amber-500/20 text-amber-300',
-  partAnimations: 'bg-red-500/20 text-red-300',
+const TAG_STYLES: Record<string, string> = {
+  rotate: 'bg-blue-500/10 text-blue-400/80',
+  float: 'bg-cyan-500/10 text-cyan-400/80',
+  sway: 'bg-emerald-500/10 text-emerald-400/80',
+  pulse: 'bg-amber-500/10 text-amber-400/80',
+  orbit: 'bg-violet-500/10 text-violet-400/80',
+  path: 'bg-orange-500/10 text-orange-400/80',
+  keyframes: 'bg-pink-500/10 text-pink-400/80',
+  emissivePulse: 'bg-yellow-500/10 text-yellow-400/80',
+  partAnimations: 'bg-rose-500/10 text-rose-400/80',
 };
 
-function AnimationTag({ tag }: { tag: string }) {
-  const color = ANIMATION_TAG_COLORS[tag] || 'bg-white/10 text-white/50';
+function Tag({ label }: { label: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-medium ${color}`}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
-      {tag}
+    <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-medium ${TAG_STYLES[label] || 'bg-white/5 text-white/40'}`}>
+      {label}
     </span>
   );
 }
 
-const AXIS_COLORS = {
-  X: 'text-rose-400',
-  Y: 'text-emerald-400',
-  Z: 'text-blue-400',
-} as const;
-
-function VectorDisplay({ label, values }: { label: string; values: [number, number, number] }) {
-  const axes = ['X', 'Y', 'Z'] as const;
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-[10px] text-white/30 uppercase tracking-widest">{label}</span>
-      <div className="grid grid-cols-3 gap-1.5">
-        {axes.map((axis, i) => (
-          <div key={axis} className="bg-white/[0.03] border border-white/[0.04] rounded-lg px-2.5 py-2 flex items-center gap-2">
-            <span className={`text-[10px] font-bold ${AXIS_COLORS[axis]}`}>{axis}</span>
-            <span className="text-xs text-white/70 font-mono">
-              {typeof values[i] === 'number' ? values[i].toFixed(2) : '0.00'}
-            </span>
+    <h3 className="text-[11px] font-semibold text-white/30 uppercase tracking-[0.08em] mb-3">
+      {children}
+    </h3>
+  );
+}
+
+const AXIS_COLORS = ['text-rose-400/60', 'text-emerald-400/60', 'text-blue-400/60'];
+const AXIS_LABELS = ['X', 'Y', 'Z'];
+
+function VectorRow({ label, values }: { label: string; values: [number, number, number] }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-[11px] text-white/25 w-12 shrink-0">{label}</span>
+      <div className="flex gap-1.5 flex-1">
+        {values.map((v, i) => (
+          <div key={i} className="flex-1 bg-white/[0.02] rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
+            <span className={`text-[10px] font-semibold ${AXIS_COLORS[i]}`}>{AXIS_LABELS[i]}</span>
+            <span className="text-[12px] text-white/50 font-mono tabular-nums">{v.toFixed(1)}</span>
           </div>
         ))}
       </div>
@@ -69,24 +69,18 @@ function VectorDisplay({ label, values }: { label: string; values: [number, numb
   );
 }
 
-function SectionHeader({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="flex items-center text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-3 border-l-2 border-violet-500 pl-3">
-      {children}
-    </h3>
-  );
-}
-
 export default function InspectorPanel({ selectedObject, onTriggerState }: InspectorPanelProps) {
   if (!selectedObject) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-6 gap-3">
-        <div className="w-16 h-16 rounded-2xl border border-dashed border-white/[0.08] flex items-center justify-center">
-          <span className="text-2xl text-white/10">{'\u2316'}</span>
+      <div className="flex flex-col items-center justify-center h-full px-8">
+        <div className="w-12 h-12 rounded-2xl bg-white/[0.02] flex items-center justify-center mb-4">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white/10">
+            <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M10 6V14M6 10H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
         </div>
-        <p className="text-white/25 text-xs text-center leading-relaxed">
-          Select an object in the viewport<br />or scene list to inspect
-        </p>
+        <p className="text-white/25 text-[13px] text-center">Select an object</p>
+        <p className="text-white/12 text-[11px] mt-1 text-center">Click on an object in the viewport</p>
       </div>
     );
   }
@@ -94,70 +88,62 @@ export default function InspectorPanel({ selectedObject, onTriggerState }: Inspe
   const animationKeys = selectedObject.animation ? Object.keys(selectedObject.animation) : [];
 
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-7 px-5 py-5">
       {/* Header */}
-      <div className="bg-[#111827] border border-white/[0.06] rounded-xl p-4">
-        <h2 className="text-base font-semibold text-white">{selectedObject.name}</h2>
-        <div className="flex items-center gap-2 mt-2">
-          <span
-            className={`px-2 py-0.5 rounded-md text-[10px] font-medium ${
-              selectedObject.type === 'compound'
-                ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20'
-                : 'bg-slate-500/15 text-slate-300 border border-slate-500/20'
-            }`}
-          >
+      <div>
+        <h2 className="text-[16px] font-semibold text-white/90">{selectedObject.name}</h2>
+        <div className="flex items-center gap-2 mt-1.5">
+          <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${
+            selectedObject.type === 'compound'
+              ? 'bg-indigo-500/10 text-indigo-400/70'
+              : 'bg-white/[0.04] text-white/30'
+          }`}>
             {selectedObject.type}
           </span>
           {selectedObject.type === 'compound' && selectedObject.partCount > 0 && (
-            <span className="text-[10px] text-white/25">{selectedObject.partCount} parts</span>
+            <span className="text-[11px] text-white/20">{selectedObject.partCount} parts</span>
           )}
         </div>
       </div>
 
       {/* Transform */}
       <section>
-        <SectionHeader>Transform</SectionHeader>
-        <div className="bg-[#111827] border border-white/[0.06] rounded-xl p-3.5 flex flex-col gap-3.5">
-          <VectorDisplay label="Position" values={selectedObject.position} />
-          <div className="h-px bg-white/[0.04]" />
-          <VectorDisplay label="Scale" values={selectedObject.scale} />
+        <SectionLabel>Transform</SectionLabel>
+        <div className="flex flex-col gap-2">
+          <VectorRow label="Position" values={selectedObject.position} />
+          <VectorRow label="Scale" values={selectedObject.scale} />
         </div>
       </section>
 
       {/* Animation */}
       {animationKeys.length > 0 && (
         <section>
-          <SectionHeader>Animation</SectionHeader>
-          <div className="bg-[#111827] border border-white/[0.06] rounded-xl p-3.5">
-            <div className="flex flex-wrap gap-2">
-              {animationKeys.map((key) => (
-                <AnimationTag key={key} tag={key} />
-              ))}
-            </div>
+          <SectionLabel>Animation</SectionLabel>
+          <div className="flex flex-wrap gap-1.5">
+            {animationKeys.map((key) => (
+              <Tag key={key} label={key} />
+            ))}
           </div>
         </section>
       )}
 
-      {/* Parts (compound objects) */}
+      {/* Parts */}
       {selectedObject.type === 'compound' && selectedObject.parts && selectedObject.parts.length > 0 && (
         <section>
-          <SectionHeader>Parts</SectionHeader>
+          <SectionLabel>Parts</SectionLabel>
           <div className="flex flex-col gap-1.5">
             {selectedObject.parts.map((part, i) => (
-              <div key={i} className="bg-[#111827] border border-white/[0.06] rounded-xl px-3.5 py-3 flex flex-col gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="text-[10px] text-white/25 font-mono w-4 text-right">{i + 1}</span>
-                  <div
-                    className="w-4 h-4 rounded-md border border-white/10 shrink-0 shadow-sm"
-                    style={{ backgroundColor: part.color }}
-                    title={part.color}
-                  />
-                  <span className="text-xs text-white/70 font-medium">{part.geometry}</span>
-                </div>
+              <div key={i} className="flex items-center gap-3 bg-white/[0.02] rounded-xl px-3.5 py-2.5">
+                <span className="text-[11px] text-white/15 font-mono w-4">{i}</span>
+                <div
+                  className="w-3 h-3 rounded-full border border-white/10 shrink-0"
+                  style={{ backgroundColor: part.color }}
+                />
+                <span className="text-[12px] text-white/50 font-medium flex-1">{part.geometry}</span>
                 {part.animation && part.animation.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 ml-[26px]">
+                  <div className="flex gap-1">
                     {part.animation.map((tag) => (
-                      <AnimationTag key={tag} tag={tag} />
+                      <Tag key={tag} label={tag} />
                     ))}
                   </div>
                 )}
@@ -170,21 +156,16 @@ export default function InspectorPanel({ selectedObject, onTriggerState }: Inspe
       {/* States */}
       {selectedObject.states && selectedObject.states.length > 0 && (
         <section>
-          <SectionHeader>States</SectionHeader>
-          <div className="flex flex-col gap-1.5">
+          <SectionLabel>States</SectionLabel>
+          <div className="flex flex-wrap gap-2">
             {selectedObject.states.map((state) => (
-              <div
+              <button
                 key={state}
-                className="bg-[#111827] border border-white/[0.06] rounded-xl px-3.5 py-2.5 flex items-center justify-between"
+                onClick={() => onTriggerState?.(selectedObject.name, state)}
+                className="px-3 py-1.5 rounded-xl text-[12px] font-medium text-white/40 bg-white/[0.03] border border-white/[0.04] hover:bg-violet-500/[0.08] hover:text-violet-300 hover:border-violet-500/20 transition-all duration-200"
               >
-                <span className="text-xs text-white/70">{state}</span>
-                <button
-                  onClick={() => onTriggerState?.(selectedObject.name, state)}
-                  className="px-3 py-1.5 rounded-lg text-[10px] font-medium text-violet-300 bg-white/[0.04] border border-white/[0.06] hover:bg-violet-500/10 hover:border-violet-500/20 transition-all duration-200"
-                >
-                  Trigger
-                </button>
-              </div>
+                {state}
+              </button>
             ))}
           </div>
         </section>

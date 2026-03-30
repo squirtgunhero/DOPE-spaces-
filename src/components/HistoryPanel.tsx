@@ -11,8 +11,7 @@ interface HistoryPanelProps {
 }
 
 function formatRelativeTime(timestamp: number): string {
-  const now = Date.now();
-  const diff = Math.max(0, now - timestamp);
+  const diff = Math.max(0, Date.now() - timestamp);
   const seconds = Math.floor(diff / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -27,13 +26,15 @@ function formatRelativeTime(timestamp: number): string {
 export default function HistoryPanel({ history, onRerun }: HistoryPanelProps) {
   if (history.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full px-6 gap-3">
-        <div className="w-16 h-16 rounded-2xl border border-dashed border-white/[0.08] flex items-center justify-center">
-          <span className="text-2xl text-white/10">{'\u25F4'}</span>
+      <div className="flex flex-col items-center justify-center h-full px-8">
+        <div className="w-12 h-12 rounded-2xl bg-white/[0.02] flex items-center justify-center mb-4">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-white/10">
+            <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M9 5.5V9L11.5 11.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
         </div>
-        <p className="text-white/25 text-xs text-center leading-relaxed">
-          No prompts yet.<br />Try a preset or type a prompt below.
-        </p>
+        <p className="text-white/25 text-[13px] text-center">No history yet</p>
+        <p className="text-white/12 text-[11px] mt-1 text-center">Try a preset or type a prompt</p>
       </div>
     );
   }
@@ -41,26 +42,24 @@ export default function HistoryPanel({ history, onRerun }: HistoryPanelProps) {
   const sorted = [...history].sort((a, b) => b.timestamp - a.timestamp);
 
   return (
-    <div className="flex flex-col gap-2 p-4">
+    <div className="flex flex-col gap-1.5 px-5 py-5">
       {sorted.map((entry, i) => (
         <button
           key={`${entry.timestamp}-${i}`}
           onClick={() => onRerun(entry.prompt)}
-          className="group w-full text-left bg-[#111827] border border-white/[0.06] rounded-xl px-4 py-3 hover:bg-white/[0.03] hover:border-white/[0.1] transition-all duration-200"
+          className="group w-full text-left bg-white/[0.01] hover:bg-white/[0.04] rounded-xl px-4 py-3.5 transition-all duration-200"
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] text-white/25 uppercase tracking-wider font-medium">
-                {formatRelativeTime(entry.timestamp)}
-              </span>
-              <p className="text-sm text-white/70 mt-1.5 line-clamp-2 leading-relaxed">
-                {entry.prompt}
-              </p>
-            </div>
-            <span className="text-[10px] font-medium text-violet-400/0 group-hover:text-violet-400/80 transition-all duration-200 bg-violet-500/0 group-hover:bg-violet-500/10 px-2 py-1 rounded-md shrink-0 mt-0.5">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[10px] text-white/20 font-medium">
+              {formatRelativeTime(entry.timestamp)}
+            </span>
+            <span className="text-[10px] text-violet-400/0 group-hover:text-violet-400/60 font-medium transition-all duration-200">
               Re-run
             </span>
           </div>
+          <p className="text-[13px] text-white/50 group-hover:text-white/70 line-clamp-2 leading-relaxed transition-colors duration-200">
+            {entry.prompt}
+          </p>
         </button>
       ))}
     </div>
