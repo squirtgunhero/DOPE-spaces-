@@ -1,5 +1,5 @@
-import Editor from '@/components/Editor';
+import EditorLayout from '@/editor/EditorLayout';
 
 export default function Home() {
-  return <Editor />;
+  return <EditorLayout />;
 }
